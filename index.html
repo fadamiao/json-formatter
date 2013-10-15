@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JSON Formatter</title>
+  <meta author="Fernando A. Damião">
+  <meta description="An offline tool to format JSON">
+  <style>
+    body{
+      margin: 0px;
+      padding: 0px;
+      border-top: 4px solid #FC4F08;
+      background-color: #E6E6E6;
+      font-family: Verdana;
+    }
+
+    a {
+      text-decoration: none;
+      color: #003366;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      width: 960px;
+      margin: 0px auto;
+    }
+
+    .header {
+      padding: 10px 20px 0px;
+      margin-bottom: 10px;
+    }
+
+    .header h1 {
+      margin: 0px;
+      padding: 0px;
+      color: #fc4f08;
+      border-bottom: solid 1px #000000;
+    }
+
+    .header h1 span {
+      color: #454545;
+      font: bold 18px Verdana;
+    }
+
+    .content {
+      padding: 0px 20px 10px;
+      min-height: 600px;
+      font: bold 13px Verdana;
+      text-align: justify;
+    }
+
+    .content .bar {
+      margin-bottom: 5px;
+    }
+
+    .content textarea {
+      height: 400px;
+      width: 49%;
+      background-color: #000000;
+      color: #00FF00;
+    }
+
+    .footer {
+      padding: 0px 20px 10px;
+      text-align: center;
+      border-top: solid 1px #000000;
+    }
+
+    .footer span {
+      color: #003366;
+      font: bold 13px Verdana;
+    }
+  </style>
+</head>
+<body onload="verify();">
+  <a href="https://github.com/fadamiao/json-formatter"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+  <div class="container">
+    <div class="header">
+      <h1>JSON Formatter</h1>
+    </div>
+    <div class="content">
+      <div class="bar">
+        <input type="radio" name="json-option" value="compact"> Compact |
+        <input type="radio" name="json-option" value="tab">Tab |
+        <input type="radio" name="json-option" value="2">2 Spaces |
+        <input type="radio" name="json-option" value="4">4 Spaces
+        <button type="button" onclick="format();">Format</button>
+        <a id="json-download" download="output.json">Download JSON</a>
+      </div>
+      <textarea id="json-input"></textarea>
+      <textarea id="json-output"></textarea><br><br>
+      <p>Sample:</p>
+      <pre><code>{"foo":"lorem","bar":"ipsum"}</code></pre>
+    </div>
+    <div class="footer">
+      <span>Made by <a href="https://github.com/fadamiao">Fernando A. Damião</a></span>
+    </div>
+  </div>
+  <script>
+    function verify() {
+      if (!navigator.userAgent.match(/Chrome|Firefox/i)) {
+        alert("Your browser have issues with 'Blob' function.\nYou may have issues to use JSON Formatter.");
+      }
+    }
+
+    /*
+     * Format and Download JSON via Blob
+     *
+     * @author Fernando A. Damião <me@fadamiao.com>
+     * @note Created At: 2013-09-04 13:55
+     * @note Last Update: 2013-09-05 10:01
+     *
+     */
+    function format() {
+      var input = document.getElementById("json-input");
+      var output = document.getElementById("json-output");
+      var option = document.getElementsByName("json-option");
+      var link = document.getElementById("json-download");
+
+      for (var i = 0; i < option.length; i++) {
+        if (option[i].checked) {
+          option = option[i].value;
+          break;
+        }
+      }
+
+      output.innerHTML = jsonFormatter(input.value, option);
+      link.href = jsonDownload(input.value, option);
+      alert('Done!');
+    }
+
+    /*
+     * Download JSON via Blob
+     *
+     * @author Fernando A. Damião <me@fadamiao.com>
+     * @note Created At: 2013-08-12 08:55
+     * @note Last Update: 2013-09-05 10:00
+     * @return String Download URL via Blob
+     *
+     */
+    function jsonDownload(json, option) {
+      window.URL = window.URL || window.webkitURL;
+      var json = jsonFormatter(json, option);
+      var blob = new Blob([json], {type: 'application/octet-stream'});
+      return window.URL.createObjectURL(blob);
+    }
+
+    /*
+     * Format JSON
+     *
+     * @author Fernando A. Damião <me@fadamiao.com>
+     * @note Created At: 2013-09-05 08:43
+     * @note Last Update: 2013-09-05 09:59
+     * @return String Formated JSON
+     *
+     */
+    function jsonFormatter(json, option) {
+      var json = JSON.parse(json);
+
+      if (option == "compact") {
+        if (typeof json === 'object') {
+          json = JSON.stringify(json);
+        }
+      } else {
+        if (option == "2" || option == "4") {
+          option = parseInt(option);
+        } else {
+          option = '\t';
+        }
+
+        if (typeof json === 'object') {
+          json = JSON.stringify(json, null, option);
+        }
+      }
+
+      return json;
+    }
+  </script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-42571831-2', 'fadamiao.github.io');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>
